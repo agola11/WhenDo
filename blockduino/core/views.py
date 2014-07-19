@@ -77,14 +77,21 @@ def new_module(request):
 		return resp
 
 
-
-
-
 # API views
 class PollingAPIView(View):
 
 	def get(self, *args, **kwargs):
-		return HttpResponse(json.dumps({'test': True}), content_type="application/json")
+		try:
+			flags = pickle.load(open('flags.pick'))
+			resp = []
+			for key in flags:
+				if not flags[key]:
+					resp.add(pickle.load(key + '.pick'))
+					flags[key] = True
+		except IOError:
+			resp = []
+
+		return HttpResponse(jsonpickle.encode(resp, unpicklable=False), content_type="application/json")
 
 # Rendering views
 class HomeView(TemplateView):
