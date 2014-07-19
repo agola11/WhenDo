@@ -7,3 +7,6 @@ log/
 
 # compiled files
 *.pyc
+
+# pickled files
+*.pick

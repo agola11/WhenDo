@@ -7,6 +7,7 @@ import cPickle as pickle
 from django.views.generic import TemplateView, View
 import uuid
 import jsonpickle
+import time
 
 modules = set(['accel', 'servo', 'led', 'push_button'])
 
@@ -46,17 +47,37 @@ def new_module(request):
 		return resp
 	else:
 		if mod_name == 'accel':
-			accel = Accel(payload['pin_info'])
-			#save in fs
+			obj = Accel(payload['pin_info'])
 		elif mod_name == 'servo':
-			servo = Servo(payload['pin_info'])
-			#save in fs
+			obj = Servo(payload['pin_info'])
 		elif mod_name == 'led':
-			led = LED(payload['pin_info'])
-			#save in fs
+			obj = LED(payload['pin_info'])
 		else:
-			push_button = PushButton(payload['pin_info'])
-			#save in fs
+			obj = PushButton(payload['pin_info'])
+
+		# retrieve flags lookup
+		try:
+			flags = pickle.load(open('flags.pick'))
+		except IOError:
+			flags = {}
+
+		uid = str(int(uuid.uuid4()))
+		
+		f = open(uid + '.pick', 'w')
+		pickle.dump(obj, f)
+		f.close()
+
+		flags[uid] = False
+		f = open('flags.pick', 'w')
+		pickle.dump(flags, f)
+		f.close()
+
+		resp = HttpResponse()
+		resp.status_code = 200
+		return resp
+
+
+
 
 
 # API views
