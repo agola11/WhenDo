@@ -88,6 +88,9 @@ class PollingAPIView(View):
 				if not flags[key]:
 					resp.append(pickle.load(open(key + '.pick')))
 					flags[key] = True
+			f = open('flags.pick', 'w')
+			pickle.dump(flags, f)
+			f.close()
 		except IOError:
 			resp = []
 
