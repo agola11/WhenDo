@@ -5,10 +5,11 @@ from core.models import HistoryNode
 from datetime import datetime
 import json
 import cPickle as pickle
+from django.views.generic import TemplateView
 
 class Accel:
 	def __init__(self):
-
+		pass
 
 class Servo:
 	pass
@@ -30,6 +31,7 @@ def new_module(request, mod_name):
 		return resp
 	else:
 		if mod_name == 'accel':
+			pass
 
-
-
+class HomeView(TemplateView):
+	template_name = 'home.html'
