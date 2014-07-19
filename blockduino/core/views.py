@@ -86,7 +86,7 @@ class PollingAPIView(View):
 			resp = []
 			for key in flags:
 				if not flags[key]:
-					resp.add(pickle.load(key + '.pick'))
+					resp.append(pickle.load(key + '.pick'))
 					flags[key] = True
 		except IOError:
 			resp = []
