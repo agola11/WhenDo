@@ -7,7 +7,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	var pollForNewBlocks = function() {
 		$http.get('/api/poll/').success(function(result) {
 			if (result.length) {
-				$scope.modules.push([1,2]);
+				$scope.modules.push(result);
 			}
 		})
 	}

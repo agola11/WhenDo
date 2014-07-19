@@ -14,10 +14,21 @@
 		<h3>Your Blockduino Project!</h3>
 
 		<div ng-controller='HomeController'>
+			{% verbatim %}
+
 			<div class='row'>
 				<h5 class='font_amethyst'>Blocks you've plugged in</h5> 
-
+				{{modules}}
+				<div class='module' ng-repeat='module in modules'>
+					Check
+				</div>
 			</div>
+
+			<div class='module'>
+					Check
+			</div>
+
+			{% endverbatim %}
 		</div>
 	</body>
 

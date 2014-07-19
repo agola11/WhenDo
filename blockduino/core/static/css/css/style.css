@@ -1,3 +1,12 @@
 .font_amethyst {
 	color: #9b59b6;
 }
+
+div .module {
+	height: 5em;
+	width: 10em;
+	background-color: #9b59b6;
+	border-radius: 1em;
+	text-align: center;
+	vertical-align: middle;
+}
