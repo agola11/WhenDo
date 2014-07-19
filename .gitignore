@@ -1,0 +1,9 @@
+
+*~
+#*#
+
+# log folder
+log/
+
+# compiled files
+*.pyc
