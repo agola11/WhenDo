@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core import serializers
-from core.models import HistoryNode
 from datetime import datetime
 import json
 import cPickle as pickle
