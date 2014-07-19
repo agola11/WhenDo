@@ -4,7 +4,7 @@ from django.core import serializers
 from datetime import datetime
 import json
 import cPickle as pickle
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 import uuid
 import jsonpickle
 
@@ -59,8 +59,12 @@ def new_module(request):
 			#save in fs
 
 
+# API views
+class PollingAPIView(View):
 
+	def get(self, *args, **kwargs):
+		return HttpResponse(json.dumps({'test': True}), content_type="application/json")
 
-
+# Rendering views
 class HomeView(TemplateView):
 	template_name = 'home.html'
