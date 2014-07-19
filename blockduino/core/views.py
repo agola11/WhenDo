@@ -63,7 +63,7 @@ def new_module(request):
 class PollingAPIView(View):
 
 	def get(self, *args, **kwargs):
-		return HttpResponse(json.dumps({'test': True}), content_type="application/json")
+		return HttpResponse(json.dumps([{'test': True}]), content_type="application/json")
 
 # Rendering views
 class HomeView(TemplateView):
