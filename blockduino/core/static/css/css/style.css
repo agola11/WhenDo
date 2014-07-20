@@ -1,3 +1,73 @@
 .font_amethyst {
 	color: #9b59b6;
 }
+
+div .sense_module {
+	height: 5em;
+	width: 10em;
+	background-color: #8e44ad;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: white;
+	
+}
+
+div .sense_module_grayed_out {
+	height: 5em;
+	width: 10em;
+	background-color: #FFF0FF;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: #A3A0A3;
+}
+
+div .do_module {
+	height: 5em;
+	width: 10em;
+	background-color: #c0392b;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: white;
+	
+}
+
+div .sense_module_abbrev {
+	height: 1.5em;
+	width: 3em;
+	background-color: #8e44ad;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: white;
+}
+
+div .do_module_abbrev {
+	height: 1.5em;
+	width: 3em;
+	background-color: #c0392b;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: white;
+}
+
+div .do_module_grayed_out {
+	height: 5em;
+	width: 10em;
+	background-color: #F0B2B2;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: white;
+}
+
+table .displayoptions {
+	position: fixed;
+	top: 5em;
+	left: 30em;
+	z-index: 999;
+	width: 100%;
+}

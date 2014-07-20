@@ -1,0 +1,15 @@
+{% verbatim %}
+<table ng-show='showTable' class='displayoptions' style="position: fixed;
+									  top: 8em;
+									  left: 70em;
+									  z-index: 999;
+									  
+									  ">
+	<tr>
+		<th>Select an action</th>
+	</tr>
+	<tr ng-repeat='option in options' ng-click='selectOption(option)'>
+		<td>{{option}}</td>
+	</tr>
+</table>
+{% endverbatim %}
