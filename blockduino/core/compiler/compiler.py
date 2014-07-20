@@ -219,6 +219,8 @@ class Compiler:
         
         elif last_key_type == 'MAIN_DO':
             line_build += workingObj[0]
+            if workingObj[0] == 'None':
+                return 
             for block_item in workingObj:
                 if block_item == workingObj[0]:
                     pass
