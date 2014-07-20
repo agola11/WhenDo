@@ -188,16 +188,29 @@ class Compiler:
 
         if last_key_type == 'WHEN':
             line_build += 'if ('
-            line_build += workingObj[0] + '.'
+            if (workingObj[0] == '!'):
+                line_build += '!'
+                line_build += workingObj[1] + '.'
+            else:
+                line_build += workingObj[0] + '.'
 
             iter_pos = 0
             last_object_pos = 0
             last_operator_pos = -1
             for block_item in workingObj:
+                if block_item == '!':
+                    iter_pos += 1
+                    continue
+
+                if workingObj[iter_pos - 1] == '!':
+                    iter_pos += 1
+                    continue
+                
                 if block_item == workingObj[0]:
                     if block_item == '1':
                         line_build = line_build[:-1]
                         break
+                
 
                 else:
                     line_build += block_item
