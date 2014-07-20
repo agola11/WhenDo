@@ -235,6 +235,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 		$http.get('/poll_new/').success(function(result) {
 			if (result.length) {
 				for (i=0; i<result.length; i++) {
+					console.log('result', result[i])
 					if (result[i].name == 'led') {
 
 						$scope.numLEDS++;
@@ -265,7 +266,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 
 						result[i].name = 'accel' + $scope.numAccel.toString()
 						$scope.initList.push([initListMap['accel'], result[i].name])
-						$scope.setupList.push([result[i].name, "init", result[i].data_pin.toString()])
+						$scope.setupList.push([result[i].name, "init", result[i].x_pin.toString(), result[i].y_pin.toString()])
 
 					}
 					$scope.modules.push(result[i]);
