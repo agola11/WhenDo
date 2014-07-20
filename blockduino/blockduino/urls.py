@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from core.views import HomeView, PollingAPIView, new_module
+from core.views import HomeView, PollingAPIView, new_module, compiler
 from django.contrib import admin
 from django.views.generic import TemplateView
 
@@ -15,5 +15,6 @@ urlpatterns = patterns('',
     url(r'^api/poll/', PollingAPIView.as_view(), name='polling'),
     url(r'^directives/when/', TemplateView.as_view(template_name='when.html'), name='when'),
     url(r'^directives/do/', TemplateView.as_view(template_name='do.html'), name='do'),
+    url(r'^compile/', compiler, name='compiler'),
     url(r'^directives/display_table/', TemplateView.as_view(template_name='display_table.html'), name='table')
 )
