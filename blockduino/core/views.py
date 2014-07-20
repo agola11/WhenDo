@@ -11,6 +11,7 @@ import time
 import serial
 from core.compiler.compiler import Compiler
 import os.path
+from os import remove
 import subprocess
 
 
@@ -105,14 +106,21 @@ def new_module(request):
 
 def poll_from_serial(request):
 	# TODO get serial
+	try:
+		remove("slots.pick")
+	except OSError:
+		pass
 	maps = {'0':'led', '3':'switch', '2':'servo', '1':'accel'}
 	resps = []
+	ser = serial.Serial('/dev/tty.usbmodem14141', 9600)
+	while ser.inWaiting() == 0:
+		pass
 	while ser.inWaiting() != 0:
 		resp = ser.readline()
 		resps.append(resp)
 	resp = resps[-1]
 	print resp
-	resp = resps.split(';')
+	resp = resp.split(';')
 	print resp
 
 	try:
@@ -121,14 +129,16 @@ def poll_from_serial(request):
 		slots = {}
 
 	p_resp = []
+	resp = resp[:-1]
 	for i in resp:
-		d = resp.split(',')
+		d = i.split(',')
 		if d[0] in slots:
 			if slots[d[0]] == d[1]:
 				continue
 		else:
 			slots[d[0]] = d[1]
 			mod_name = maps[d[1]]
+			print mod_name
 			if mod_name == 'accel':
 				obj = Accel(d[2], d[3])
 			elif mod_name == 'servo':
@@ -137,19 +147,14 @@ def poll_from_serial(request):
 				obj = LED(d[2])
 			else:
 				obj = PushButton(d[2])
-			p_resp.add(obj)
+			p_resp.append(obj)
 
 	f = open('slots.pick', 'w')
 	pickle.dump(slots, f)
 	f.close()
 	print p_resp
 
-
 	return HttpResponse(jsonpickle.encode(p_resp, unpicklable=False), content_type="application/json")
-
-
-
-
 
 
 # API views
