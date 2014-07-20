@@ -315,7 +315,8 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 			$scope.compiledDict = _.extend($scope.compiledDict, tempDict)
 			if ($scope.headsRecieved == $scope.headCount) {
 				console.log('$doneCompiling', $scope.compiledDict)
-				$scope.finalDict = {'setup_list': $scope.setupList, 'init_list': $scope.initList, 'whendo_list':$scope.compiledDict}
+				$scope.finalDict = {'setup_list': $scope.setupList, 'init_list': $scope.initList, 'whendo_dict':$scope.compiledDict}
+				$http.post()
 			}
 				
 		
