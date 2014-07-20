@@ -157,9 +157,9 @@ blockduino.directive('do', function($compile, $filter) {
 			scope.$on('$compileToDict', function() {
 				if (scope.selectedModule && scope.selectedAction)
 					if (scope.actionAfterAction)
-						scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction, scope.actionAfterAction]
-					else scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction]
-				else scope.compiledDict['main'] = ['None']
+						scope.compiledDict['M'] = [scope.selectedModule.name, scope.selectedAction, scope.actionAfterAction]
+					else scope.compiledDict['M'] = [scope.selectedModule.name, scope.selectedAction]
+				else scope.compiledDict['M'] = ['None']
 				if (!scope.whenCount) {
 					scope.$emit('$doneDoCompiling', scope.parsedWhenId, scope.compiledDict)
 				}
