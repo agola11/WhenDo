@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd ~/blockduino/
+
+ino clean
+ino build -m mega2560 --cxxflags=-I$PWD/src
+ino upload -m mega2560
