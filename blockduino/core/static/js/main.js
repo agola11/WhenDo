@@ -1,6 +1,26 @@
+
 var blockduino = angular.module('blockduino',[])
 
-blockduino.directive('when', function() {
+blockduino.directive('displayTable', function() {
+	return {
+		restrict: 'EA',
+		templateUrl: '/directives/display_table/',
+		scope: {
+			showTable: '=',
+			selected: '=',
+			options: '='
+		},
+		link: function(scope, elem, attrs) {
+			scope.selectOption = function(option) {
+				scope.selected = option;
+				scope.showTable = false;
+			}
+
+		}
+	}
+})
+
+blockduino.directive('when', function($filter) {
 	return {
 		restrict: 'EA',
 		templateUrl: '/directives/when/',
@@ -13,13 +33,17 @@ blockduino.directive('when', function() {
 		},
 		link: function(scope, elem, attrs) {
 			scope_when = scope;
+			scope.limitFilter = $filter('limitTo');
 			scope.parsedWhenId = parseInt(scope.whenId)
 			scope.dosRecieved = 0
 			scope.compiledList = []
 			scope.compiledDict = {}
+			scope.showTable = false;
+			scope.selectedAction = '';
 			scope.selectModule = function() {
 				scope.$emit('$displaySensingModules', scope.parsedWhenId)
 			}
+
 			scope.$on('$selectedSenseModule', function(event, module, id) {
 				console.log('$selectedSenseModule', module, id)
 				if (id == scope.parsedWhenId) {
@@ -41,13 +65,23 @@ blockduino.directive('when', function() {
 			})
 
 			scope.$on('$compileToDict', function() {
-				scope.compiledList = [scope.selectedModule.name, scope.selectedAction]
+				if (scope.selectedModule && scope.selectedAction)
+					scope.compiledList = [scope.selectedModule.name, scope.selectedAction]
+				else
+					scope.compiledList = [1]
 			})
+			scope.displayTable = function() {
+				scope.showTable = true;
+			}
+			scope.clear = function() {
+				scope.selectedModule = undefined;
+				scope.selectedAction = undefined;
+			}
 		}
 	}
 })
 
-blockduino.directive('do', function($compile) {
+blockduino.directive('do', function($compile, $filter) {
 	return {
 		restrict: 'EA',
 		templateUrl: '/directives/do/',
@@ -58,7 +92,11 @@ blockduino.directive('do', function($compile) {
 			doId: '@'
 		},
 		link: function(scope, elem, attrs) {
+			var default_do_html = "Do: <span class='do_module_abbrev' ng-show='selectedModule'>{{selectedModule.name | limitTo:1}}</span><span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button></span> <span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> </span><button ng-click='goDeeper()' class='btn-primary btn'>deeper</button><button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button><display-table show-table='showTable' selected='selectedAction' options='selectedModule.attribs'></display-table>"
 			scope_do = scope;
+			scope.showTable = false;
+			scope.selectedAction = '';
+			scope.limitFilter = $filter('limitTo');
 			scope.whenCount = 0;
 			scope.whensRecieved = 0;
 			scope.elem = elem;
@@ -75,6 +113,11 @@ blockduino.directive('do', function($compile) {
 				}
 			})
 
+			var clearHtml = function() {
+				elem.empty()
+				elem.append(default_do_html)
+				$compile(elem.contents())(scope);
+			}
 			var addHtml = function() {
 				elem.append("<div when ng-show='showWhen' when-id='{{whenIdCount}}' when-id-count='whenIdCount' do-id-count='doIdCount' parsed-do-id='parsedDoId'></div>")
         		$compile(elem.contents())(scope);
@@ -108,12 +151,23 @@ blockduino.directive('do', function($compile) {
 			})
 
 			scope.$on('$compileToDict', function() {
-				scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction]
+				if (scope.selectedModule && scope.selectedAction)
+					scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction]
+				else scope.compiledDict['main'] = ['None']
 				if (!scope.whenCount) {
-					console.log('here here?')
 					scope.$emit('$doneDoCompiling', scope.parsedWhenId, scope.compiledDict)
 				}
 			});
+
+			scope.displayTable = function() {
+				scope.showTable = true;
+			}
+			scope.clear = function() {
+				scope.selectedModule = undefined;
+				scope.selectedAction = undefined;
+				scope.whenCount = 0;
+				clearHtml();
+			}
 		}
 	}
 })
@@ -123,6 +177,8 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	scope_ctrl = $scope;
 	POLL_DELAY_SECONDS = 500;
 	$scope.modules = []
+	$scope.whenDoId = 1
+	$scope.whenDos = [1]
 	$scope.whenIdCount = 0
 	$scope.doIdCount = 0
 	$scope.headCount = 1;
@@ -140,18 +196,22 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	$scope.$on('$displayDoingModules', function(event, doId) {
 		console.log('displayDoingModules', doId)
 		$scope.currentDoId = doId;
-		$scope.displaySensingModules = true;
+		$scope.displayDoingModules = true;
+		$scope.displaySensingModules = false;
 	})
 	$scope.$on('$displaySensingModules', function(event,whenId) {
 		console.log('displaySensingModules', whenId)
 		$scope.currentWhenId = whenId;
-		$scope.displayDoingModules = true;
+		$scope.displaySensingModules = true;
+		$scope.displayDoingModules = false;
 
 	})
 	$scope.selectedDoModule = function(module) {
 		console.log('$selectedDoModule', module, $scope.currentDoId)
 		$scope.$broadcast('$selectedDoModule', module, $scope.currentDoId)
 	}
+
+
 
 	$scope.selectedSenseModule = function(module) {
 		console.log('$selectedSenseModule', module, $scope.currentWhenId)
@@ -163,7 +223,6 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	}
 
 	$scope.$on('$doneHeadCompiling', function(event, parsedDoId, list, dict) {
-		
 
 			$scope.headsRecieved = $scope.headsRecieved + 1
 			var tempDict = {}
@@ -177,6 +236,14 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 		
 		
 	})
+
+	$scope.addWhenDo = function() {
+		$scope.whenDoId++;
+		$scope.whenDos.push($scope.whenDoId)
+	}
+	$scope.deleteWhenDo = function(index) {
+		$scope.whenDos.splice(index, 1)
+	}
 
 	$interval(pollForNewBlocks, POLL_DELAY_SECONDS)
 }])

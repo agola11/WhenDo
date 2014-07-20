@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/poll/', PollingAPIView.as_view(), name='polling'),
     url(r'^directives/when/', TemplateView.as_view(template_name='when.html'), name='when'),
-    url(r'^directives/do/', TemplateView.as_view(template_name='do.html'), name='do')
+    url(r'^directives/do/', TemplateView.as_view(template_name='do.html'), name='do'),
+    url(r'^directives/display_table/', TemplateView.as_view(template_name='display_table.html'), name='table')
 )

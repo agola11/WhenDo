@@ -8,7 +8,19 @@ div .sense_module {
 	background-color: #8e44ad;
 	border-radius: 1em;
 	text-align: center;
-	display: table-cell;
+	display: inline-block;
+	color: white;
+	
+}
+
+div .sense_module_grayed_out {
+	height: 5em;
+	width: 10em;
+	background-color: #FFF0FF;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: #A3A0A3;
 }
 
 div .do_module {
@@ -17,7 +29,9 @@ div .do_module {
 	background-color: #c0392b;
 	border-radius: 1em;
 	text-align: center;
-	display: table-cell;
+	display: inline-block;
+	color: white;
+	
 }
 
 div .sense_module_abbrev {
@@ -26,7 +40,8 @@ div .sense_module_abbrev {
 	background-color: #8e44ad;
 	border-radius: 1em;
 	text-align: center;
-	display: table-cell;
+	display: inline-block;
+	color: white;
 }
 
 div .do_module_abbrev {
@@ -35,5 +50,24 @@ div .do_module_abbrev {
 	background-color: #c0392b;
 	border-radius: 1em;
 	text-align: center;
-	display: table-cell;
+	display: inline-block;
+	color: white;
+}
+
+div .do_module_grayed_out {
+	height: 5em;
+	width: 10em;
+	background-color: #F0B2B2;
+	border-radius: 1em;
+	text-align: center;
+	display: inline-block;
+	color: white;
+}
+
+table .displayoptions {
+	position: fixed;
+	top: 5em;
+	left: 30em;
+	z-index: 999;
+	width: 100%;
 }
