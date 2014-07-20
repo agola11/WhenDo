@@ -191,11 +191,15 @@ class Compiler:
 
         if last_key_type == 'WHEN':
             line_build += 'if ('
+            if workingObj[0] == 1 or workingObj[0] == '1':
+		line_build += '1)'
+                self.codeArray.append(line_build)
+                return
             if (workingObj[0] == '!'):
                 line_build += '!'
-                line_build += workingObj[1] + '.'
+                line_build += str(workingObj[1]) + '.'
             else:
-                line_build += workingObj[0] + '.'
+                line_build += str(workingObj[0]) + '.'
 
             iter_pos = 0
             last_object_pos = 0

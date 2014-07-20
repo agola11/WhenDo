@@ -50,6 +50,9 @@ def compiler(request):
 	w_dict = payload['whendo_dict']
 	s_list = payload['setup_list']
 	i_list = payload['init_list']
+	print (w_dict)
+	print(s_list)
+	print(i_list)
 
 	c1 = Compiler(w_dict, s_list, i_list)
 	save_path = '/Users/ankush/blockduino/src/'
