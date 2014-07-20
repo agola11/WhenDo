@@ -4,4 +4,4 @@ cd ~/blockduino/
 
 ino clean
 ino build --cxxflags=-I$PWD/src
-ino upload -p /dev/tty/usbmodem14111 
+ino upload -p /dev/tty.usbmodem14111 

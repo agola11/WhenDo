@@ -106,10 +106,6 @@ def new_module(request):
 
 def poll_from_serial(request):
 	# TODO get serial
-	try:
-		remove("slots.pick")
-	except OSError:
-		pass
 	maps = {'0':'led', '3':'switch', '2':'servo', '1':'accel'}
 	resps = []
 	ser = serial.Serial('/dev/tty.usbmodem14141', 9600)
