@@ -25,6 +25,7 @@ class Compiler:
                 the front-end visual programming interface
         """
         self.jsonDict = json_dict
+        self.codeArray = []
 
     def get_start(self):
         self.wPos = 1
@@ -33,7 +34,6 @@ class Compiler:
 
     #TODO 
     def compiler_step(self):
-        print 'keyString: ', self.keyString
         key_list = self.keyString.split('.')
         last_key = self.keyString.split('.')[-1]
 
@@ -44,6 +44,7 @@ class Compiler:
         tier_string = '.'.join(key_list)
 
         if key_type == 'WHEN':
+            self.prevKeyString = self.keyString
             next_key = self.get_compiler_step_when(tier_string, last_key)
             if tier_string == '':
                 self.keyString = next_key
@@ -52,10 +53,13 @@ class Compiler:
             return 'CONTINUE'
 
         elif key_type == 'DO':
+            self.prevKeyString = self.keyString
             self.keyString = self.keyString + '.' + 'M'
+            self.codeArray.append('{')
             return 'CONTINUE'
         
         elif key_type == 'MAIN_DO':
+            self.prevKeyString = self.keyString
             next_key = self.get_compiler_step_m(tier_string)
             if next_key == 'DONE':
                 return 'FINISHED'
@@ -162,9 +166,71 @@ class Compiler:
 
         return workingObj
 
+    def get_last_key(self):
+        return self.keyString.split('.')[-1]
+
+    def is_operator(self, val):
+        if val == '&&' or val == '||' or val == '!':
+            return True
+
     #TODO incorporate building of the lines
     def assemble(self, workingObj):
-        pass
+        #self.codeArray.append(self.keyString + ':')
+        line_build = ''
+        last_key = self.get_last_key()
+        last_key_type = self.get_type(last_key)
+
+        if last_key_type == 'WHEN':
+            line_build += 'if ('
+            line_build += workingObj[0] + '.'
+
+            iter_pos = 0
+            last_object_pos = 0
+            last_operator_pos = -1
+            for block_item in workingObj:
+                if block_item == workingObj[0]:
+                    if block_item == '1':
+                        line_build = line_build[:-1]
+                        break
+
+                else:
+                    line_build += block_item
+                    if self.is_operator(block_item):
+                        line_build += ' '
+                    elif not self.is_operator(workingObj[iter_pos - 1]):
+                        line_build += '()'
+
+                    if block_item != workingObj[-1]:
+                        if self.is_operator(workingObj[iter_pos + 1]):
+                            line_build += ' '
+                        elif not self.is_operator(block_item):
+                            line_build += '.'
+
+                iter_pos += 1
+
+            line_build += ')'
+            self.codeArray.append(line_build)
+        
+        elif last_key_type == 'MAIN_DO':
+            line_build += workingObj[0]
+            for block_item in workingObj:
+                if block_item == workingObj[0]:
+                    pass
+                else:
+                    line_build += '.' + block_item + '()'
+            self.codeArray.append(line_build)
+
+
+        
+        
+    def insert_curly(self):
+        last_key = self.get_last_key()
+
+        if last_key[0] == 'W' and int(last_key[1]) > 1:
+            #self.codeArray.append('}')
+            key_string_diff = len(self.prevKeyString.split('.')) - len(self.keyString.split('.'))
+            for i in range(0, key_string_diff):
+                self.codeArray.append('}')
 
 
     def build(self, filename='block.pde'):
@@ -176,12 +242,30 @@ class Compiler:
             self.assemble(cVal)
             
             cStep = self.compiler_step()
+            
+            self.insert_curly()
 
-            sleep(1)
 
             if cStep == 'FINISHED':
                 break
 
+        in_count = self.codeArray.count('{')
+        out_count = self.codeArray.count('}')
+        diff_curly = in_count - out_count
+        for i in range(0, diff_curly):
+            self.codeArray.append('}')
+        
+
+        index_pos = 0 
+        for line in self.codeArray:
+            sub_array = self.codeArray[:index_pos]
+            indent_level = sub_array.count('{') - sub_array.count('}')
+            if line == '}':
+                indent_level = indent_level - 1 
+            out_line = ('    ' * indent_level) + line 
+            index_pos = index_pos + 1
+            print out_line
+            
 
 
         
