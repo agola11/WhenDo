@@ -9,7 +9,7 @@ import uuid
 import jsonpickle
 import time
 import serial
-from core.compiler import compiler
+from core.compiler.compiler import Compiler
 import os.path
 import subprocess
 
@@ -45,13 +45,14 @@ class PushButton:
 		self.name = 'push_button'
 		self.sense = True
 
-def compile(request):
+def compiler(request):
 	payload = json.loads(request.body)
-	j_dict = payload['j_dict']
-	l1 = payload['l_dict']
-	s1 = payload['s_dict']
-	c1 = compiler.Compiler(j_dict, l1, s1)
-	save_path = '~/blockduino/src/'
+	w_dict = payload['whendo_dict']
+	s_list = payload['setup_list']
+	i_list = payload['init_list']
+
+	c1 = Compiler(w_dict, s_list, i_list)
+	save_path = '/Users/ankush/blockduino/src/'
 	name = 'blockduino_sketch.ino'
 	complete_name = os.path.join(save_path, name)
 	c1.build(complete_name)
