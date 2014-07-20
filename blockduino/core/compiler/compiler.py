@@ -92,6 +92,7 @@ class Compiler:
     def get_compiler_step_m(self, tierString):
         options = self.get_val(tierString).keys()
 
+
         if 'W1' in options:
             return 'W1'
         else:
@@ -99,7 +100,7 @@ class Compiler:
             last_key = tierString.split('.')[-1]
             explore_tier = self.tier_step_back(tierString)
             previous_tier = explore_tier
-            while previous_tier != '' or explore_tier != '':
+            while True:
                 if explore_tier == '':
                     options = self.jsonDict.keys()
                 else:
@@ -112,6 +113,8 @@ class Compiler:
                     last_key = explore_tier.split('.')[-1]
                     previous_tier = explore_tier
                     explore_tier = self.tier_step_back(explore_tier)
+                    if explore_tier == '' and previous_tier == '':
+                        break
 
             return 'DONE'
 
@@ -283,7 +286,8 @@ class Compiler:
 
         f = open(filename, 'w+')
         
-        f.write('#include <blockduino.h>\n')
+        f.write('#include <Blockduino.h>\n')
+        f.write('#include <Servo.h>\n')
 
         for line in self.codeInitArray:
             f.write(line)
@@ -312,7 +316,15 @@ class Compiler:
 
     def build_init(self):
         for block_line in self.initArray:
-            line = block_line[0] + ' ' + block_line[1] + ';'
+            line = block_line[0] + ' ' + block_line[1]
+            if len(block_line) > 2:
+                sub_array = block_line[2:]
+                line += '('
+                for sub in sub_array:
+                    line += sub + ',' 
+                line = line[:-1]
+                line += ')'
+            line += ';'
             self.codeInitArray.append(line)
 
     def build_setup(self):
