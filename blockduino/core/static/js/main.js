@@ -241,7 +241,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 
 						result[i].name = 'led' + $scope.numLEDS.toString()
 						$scope.initList.push([initListMap['led'], result[i].name])
-						$scope.setupList.push([result[i].name, "init", result[i].power])
+						$scope.setupList.push([result[i].name, "init", result[i].power.toString()])
 					}
 					if (result[i].name == 'servo') {
 
@@ -249,7 +249,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 
 						result[i].name = 'servo' + $scope.numServos.toString()
 						$scope.initList.push([initListMap['servo'], result[i].name])
-						$scope.setupList.push([result[i].name, "init", result[i].data_pin])
+						$scope.setupList.push([result[i].name, "init", result[i].data_pin.toString()])
 					}
 					if (result[i].name == 'push_button') {
 
@@ -257,7 +257,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 
 						result[i].name = 'push_button' + $scope.numPushButton.toString()
 						$scope.initList.push([initListMap['push_button'], result[i].name])
-						$scope.setupList.push([result[i].name, "init", result[i].power])
+						$scope.setupList.push([result[i].name, "init", result[i].power.toString()])
 					}
 					if (result[i].name == 'accel') {
 
@@ -265,7 +265,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 
 						result[i].name = 'accel' + $scope.numAccel.toString()
 						$scope.initList.push([initListMap['accel'], result[i].name])
-						$scope.setupList.push([result[i].name, "init", result[i].data_pin])
+						$scope.setupList.push([result[i].name, "init", result[i].data_pin.toString()])
 
 					}
 					$scope.modules.push(result[i]);
