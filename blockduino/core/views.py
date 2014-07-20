@@ -55,11 +55,11 @@ def compiler(request):
 	print(i_list)
 
 	c1 = Compiler(w_dict, s_list, i_list)
-	save_path = '/Users/ankush/blockduino/src/'
+	save_path = '/Users/pranav/'
 	name = 'blockduino_sketch.ino'
 	complete_name = os.path.join(save_path, name)
 	c1.build(complete_name)
-	subprocess.call(['blockduino_script'])
+	#subprocess.call(['blockduino_script'])
 	resp = HttpResponse()
 	resp.status_code = 200
 	return resp
