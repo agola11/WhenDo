@@ -1,4 +1,3 @@
-
 var blockduino = angular.module('blockduino',[])
 
 blockduino.directive('displayTable', function() {
@@ -11,6 +10,7 @@ blockduino.directive('displayTable', function() {
 			options: '='
 		},
 		link: function(scope, elem, attrs) {
+			scope_display = scope;
 			scope.selectOption = function(option) {
 				scope.selected = option;
 				scope.showTable = false;
@@ -57,9 +57,12 @@ blockduino.directive('when', function($filter) {
 					scope.dosRecieved = scope.dosRecieved + 1;
 					scope.compiledDict = _.extend(scope.compiledDict, dict)
 					if (!scope.head) {
+						console.log('here')
 						scope.$emit('$doneWhenCompiling', scope.parsedDoId, scope.compiledList, scope.compiledDict)
 					}
-					else (scope.$emit('$doneHeadCompiling', scope.parsedDoId, scope.compiledList, scope.compiledDict))
+					else {
+						console.log('her????')
+						scope.$emit('$doneHeadCompiling', scope.parsedDoId, scope.compiledList, scope.compiledDict)}
 				}
 				
 			})
@@ -92,10 +95,11 @@ blockduino.directive('do', function($compile, $filter) {
 			doId: '@'
 		},
 		link: function(scope, elem, attrs) {
-			var default_do_html = "Do: <span class='do_module_abbrev' ng-show='selectedModule'>{{selectedModule.name | limitTo:1}}</span><span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button></span> <span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> </span><button ng-click='goDeeper()' class='btn-primary btn'>deeper</button><button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button><display-table show-table='showTable' selected='selectedAction' options='selectedModule.attribs'></display-table>"
+			var default_do_html = "Do: <span class='do_module_abbrev' ng-show='selectedModule'>{{selectedModule.name}}</span><span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button></span><span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> <button ng-show='selectedModule && selectedAction && selectedModule[selectedAction] && !actionAfterAction' ng-click='displayTable(\"actionAfter\")' class='btn-primary btn'> + </button> <button ng-show='actionAfterAction' ng-click='displayTable(\"actionAfter\")' class='btn-primary btn'> {{actionAfterAction}}</button><button ng-click='goDeeper()' class='btn-primary btn'>deeper</button></span><button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button><display-table ng-hide='selectedAction && getActionAfterOptions' show-table='showTable' selected='selectedAction' options='getOptions()'></display-table><display-table ng-show='selectedAction && getActionAfterOptions' show-table='showTable' selected='actionAfterAction' options='getOptions()'></display-table>"
 			scope_do = scope;
 			scope.showTable = false;
 			scope.selectedAction = '';
+			scope.actionAfterAction = '';
 			scope.limitFilter = $filter('limitTo');
 			scope.whenCount = 0;
 			scope.whensRecieved = 0;
@@ -152,22 +156,49 @@ blockduino.directive('do', function($compile, $filter) {
 
 			scope.$on('$compileToDict', function() {
 				if (scope.selectedModule && scope.selectedAction)
-					scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction]
+					if (scope.actionAfterAction)
+						scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction, scope.actionAfterAction]
+					else scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction]
 				else scope.compiledDict['main'] = ['None']
 				if (!scope.whenCount) {
 					scope.$emit('$doneDoCompiling', scope.parsedWhenId, scope.compiledDict)
 				}
 			});
 
-			scope.displayTable = function() {
+			scope.displayTable = function(action_after) {
+				if (action_after) scope.getActionAfterOptions = true;
+				else scope.getActionAfterOptions = false;
 				scope.showTable = true;
 			}
+
+			scope.getOptions = function() {
+				if (scope.getActionAfterOptions) {
+					if (scope.selectedModule)
+						return scope.selectedModule[scope.selectedAction]
+					else return undefined
+				}
+				else if (scope.selectedModule) {
+					return scope.selectedModule.attribs
+				}
+				else return undefined
+			}
+
 			scope.clear = function() {
 				scope.selectedModule = undefined;
 				scope.selectedAction = undefined;
+				scope.actionAfterAction = '';
+				scope.getActionAfterOptions = true;
 				scope.whenCount = 0;
 				clearHtml();
 			}
+			scope.moduleActionAttribs = function() {
+				if (scope.selectedModule)
+					return scope.selectedModule[scope.selectedAction]
+				return false;
+			}
+			scope.$watch('selectedAction', function(newVal) {
+				if (newVal) scope.actionAfterAction = '';
+			})
 		}
 	}
 })
@@ -184,11 +215,62 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	$scope.headCount = 1;
 	$scope.headsRecieved = 0;
 	$scope.compiledDict = {}
+	$scope.initList = [];
+	$scope.setupList = [];
+	$scope.numLEDS = 0
+	$scope.numServos = 0
+	$scope.numAccel = 0
+	$scope.numPushButton = 0
+
+	var initListMap = {
+		'servo': 'B_Servo',
+		'led': 'B_LED',
+		'push_button': 'B_PushButton',
+		'accel': 'B_Accel',
+		'led_g': 'B_LEDGroup'
+	}
+	var led_attribs = ['turn_on', 'turn_off']
+
 	var pollForNewBlocks = function() {
 		$http.get('/api/poll/').success(function(result) {
 			if (result.length) {
-				for (i=0; i<result.length; i++)
+				for (i=0; i<result.length; i++) {
+					if (result[i].name == 'led') {
+
+						$scope.numLEDS++;
+
+						result[i].name = 'led' + $scope.numLEDS.toString()
+						$scope.initList.push([initListMap['led'], result[i].name])
+						$scope.setupList.push([result[i].name, "init", result[i].power])
+					}
+					if (result[i].name == 'servo') {
+
+						$scope.numServos++;
+
+						result[i].name = 'servo' + $scope.numServos.toString()
+						$scope.initList.push([initListMap['servo'], result[i].name])
+						$scope.setupList.push([result[i].name, "init", result[i].data_pin])
+					}
+					if (result[i].name == 'push_button') {
+
+						$scope.numPushButton++;
+
+						result[i].name = 'push_button' + $scope.numPushButton.toString()
+						$scope.initList.push([initListMap['push_button'], result[i].name])
+						$scope.setupList.push([result[i].name, "init", result[i].power])
+					}
+					if (result[i].name == 'accel') {
+
+						$scope.numAccel++;
+
+						result[i].name = 'accel' + $scope.numAccel.toString()
+						$scope.initList.push([initListMap['accel'], result[i].name])
+						$scope.setupList.push([result[i].name, "init", result[i].data_pin])
+
+					}
 					$scope.modules.push(result[i]);
+				}
+					
 			}
 		})
 	}
@@ -223,7 +305,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	}
 
 	$scope.$on('$doneHeadCompiling', function(event, parsedDoId, list, dict) {
-
+			console.log('head DONE')
 			$scope.headsRecieved = $scope.headsRecieved + 1
 			var tempDict = {}
 			var keyNameWhen = 'W' + $scope.headsRecieved.toString()
@@ -231,8 +313,11 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 			tempDict[keyNameWhen] =  list
 			tempDict[keyNameDo] =  dict
 			$scope.compiledDict = _.extend($scope.compiledDict, tempDict)
-			if ($scope.headsRecieved == $scope.headCount)
+			if ($scope.headsRecieved == $scope.headCount) {
 				console.log('$doneCompiling', $scope.compiledDict)
+				$scope.finalDict = {'setup_list': $scope.setupList, 'init_list': $scope.initList, 'whendo_list':$scope.compiledDict}
+			}
+				
 		
 		
 	})
@@ -244,6 +329,15 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	$scope.deleteWhenDo = function(index) {
 		$scope.whenDos.splice(index, 1)
 	}
+
+	$scope.$watch('numLEDS',function(newVal) {
+		if (newVal == 3) {
+			var led_g_dict = {name: 'led_g', attribs:['get_next', 'get_current'], get_next: led_attribs, get_current: led_attribs, sense:false}
+			$scope.modules.push(led_g_dict)
+			$scope.initList.push([initListMap['led_g'],led_g_dict.name, 'LED1', 'LED2','LED3'])
+
+		}
+	})
 
 	$interval(pollForNewBlocks, POLL_DELAY_SECONDS)
 }])

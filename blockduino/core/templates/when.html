@@ -2,7 +2,7 @@
 <div class='row'>
 	<div class='small-4 columns'>
 		<div class='row'>
-		When: <div class='sense_module_abbrev' ng-show='selectedModule'>{{selectedModule.name | limitTo:1}}</div><span> <button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button> </span>
+		When: <div class='sense_module_abbrev' ng-show='selectedModule'>{{selectedModule.name}}</div><span> <button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button> </span>
 
 		<span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> </span>
 		<button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button>
