@@ -231,6 +231,11 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	}
 	var led_attribs = ['turn_on', 'turn_off']
 
+	$http.get('/delete_pickle/').
+		success(function() {
+			scope.log('success')
+		})
+
 	var pollForNewBlocks = function() {
 		$http.get('/poll_new/').success(function(result) {
 			if (result.length) {

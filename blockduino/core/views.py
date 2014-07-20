@@ -152,6 +152,12 @@ def poll_from_serial(request):
 
 	return HttpResponse(jsonpickle.encode(p_resp, unpicklable=False), content_type="application/json")
 
+def remove_pickle(request):
+	remove('slots.pick')
+	resp = HttpResponse()
+	resp.status_code = 200
+	return resp
+
 
 # API views
 class PollingAPIView(View):
