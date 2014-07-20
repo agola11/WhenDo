@@ -71,7 +71,7 @@ blockduino.directive('when', function($filter) {
 				if (scope.selectedModule && scope.selectedAction)
 					scope.compiledList = [scope.selectedModule.name, scope.selectedAction]
 				else
-					scope.compiledList = [1]
+					scope.compiledList = ["1"]
 			})
 			scope.displayTable = function() {
 				scope.showTable = true;
