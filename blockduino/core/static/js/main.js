@@ -14,6 +14,8 @@ blockduino.directive('when', function() {
 		link: function(scope, elem, attrs) {
 			scope_when = scope;
 			scope.parsedWhenId = parseInt(scope.whenId)
+			scope.dosRecieved = 0
+			scope.compiledList = []
 			scope.compiledDict = {}
 			scope.selectModule = function() {
 				scope.$emit('$displaySensingModules', scope.parsedWhenId)
@@ -28,18 +30,18 @@ blockduino.directive('when', function() {
 			scope.$on('$doneDoCompiling', function(event, parsedWhenId, dict) {
 				console.log('done in when', parsedWhenId, scope.parsedWhenId)
 				if (parsedWhenId == scope.parsedWhenId) {
+					scope.dosRecieved = scope.dosRecieved + 1;
 					scope.compiledDict = _.extend(scope.compiledDict, dict)
 					if (!scope.head) {
-						console.log('not head')
-						scope.$emit('$doneWhenCompiling',scope.parsedDoId, scope.compiledDict)
+						scope.$emit('$doneWhenCompiling', scope.parsedDoId, scope.compiledList, scope.compiledDict)
 					}
-					else (console.log('compiledDict', scope.compiledDict))
+					else (scope.$emit('$doneHeadCompiling', scope.parsedDoId, scope.compiledList, scope.compiledDict))
 				}
 				
 			})
 
 			scope.$on('$compileToDict', function() {
-				scope.compiledDict['when'] = [scope.selectedModule.name, scope.selectedAction]
+				scope.compiledList = [scope.selectedModule.name, scope.selectedAction]
 			})
 		}
 	}
@@ -57,6 +59,8 @@ blockduino.directive('do', function($compile) {
 		},
 		link: function(scope, elem, attrs) {
 			scope_do = scope;
+			scope.whenCount = 0;
+			scope.whensRecieved = 0;
 			scope.elem = elem;
 			scope.compiledDict = {}
 			console.log("here",scope.doId, scope.doIdCount)
@@ -72,7 +76,6 @@ blockduino.directive('do', function($compile) {
 			})
 
 			var addHtml = function() {
-				scope.htmlAdded = true;
 				elem.append("<div when ng-show='showWhen' when-id='{{whenIdCount}}' when-id-count='whenIdCount' do-id-count='doIdCount' parsed-do-id='parsedDoId'></div>")
         		$compile(elem.contents())(scope);
 			}
@@ -80,24 +83,33 @@ blockduino.directive('do', function($compile) {
 			scope.goDeeper = function() {
 				scope.whenIdCount = scope.whenIdCount + 1;
 				scope.doIdCount = scope.doIdCount + 1;
-				
 				scope.showWhen = true;
 				addHtml();
+				scope.whenCount = scope.whenCount + 1;
 			}
 
-			scope.$on('$doneWhenCompiling', function(event, parsedDoId, dict) {
-				console.log('should not be here')
+
+			scope.$on('$doneWhenCompiling', function(event, parsedDoId, list, dict) {
 				if (parsedDoId == scope.parsedDoId) {
-					scope.compiledDict = _.extend(scope.compiledDict, dict)
-					scope.$emit('$doneDoCompiling', scope.parsedWhenId, scope.compiledDict)
+
+					scope.whensRecieved = scope.whensRecieved + 1		
+
+					var tempDict = {}
+					var keyNameWhen = 'W' + scope.whensRecieved.toString()
+					var keyNameDo = 'D' + scope.whensRecieved.toString()
+					tempDict[keyNameWhen] =  list
+					tempDict[keyNameDo] =  dict
+
+					scope.compiledDict = _.extend(scope.compiledDict, tempDict)
+					if (scope.whensRecieved == scope.whenCount)
+						scope.$emit('$doneDoCompiling', scope.parsedWhenId, scope.compiledDict)
 				}
 				
 			})
 
 			scope.$on('$compileToDict', function() {
-				scope.compiledDict['do'] = {}
-				scope.compiledDict['do']['main'] = [scope.selectedModule.name, scope.selectedAction]
-				if (!scope.htmlAdded) {
+				scope.compiledDict['main'] = [scope.selectedModule.name, scope.selectedAction]
+				if (!scope.whenCount) {
 					console.log('here here?')
 					scope.$emit('$doneDoCompiling', scope.parsedWhenId, scope.compiledDict)
 				}
@@ -113,7 +125,9 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	$scope.modules = []
 	$scope.whenIdCount = 0
 	$scope.doIdCount = 0
-
+	$scope.headCount = 1;
+	$scope.headsRecieved = 0;
+	$scope.compiledDict = {}
 	var pollForNewBlocks = function() {
 		$http.get('/api/poll/').success(function(result) {
 			if (result.length) {
@@ -147,6 +161,22 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	$scope.done = function(){
 		$scope.$broadcast('$compileToDict')
 	}
+
+	$scope.$on('$doneHeadCompiling', function(event, parsedDoId, list, dict) {
+		
+
+			$scope.headsRecieved = $scope.headsRecieved + 1
+			var tempDict = {}
+			var keyNameWhen = 'W' + $scope.headsRecieved.toString()
+			var keyNameDo = 'D' + $scope.headsRecieved.toString()
+			tempDict[keyNameWhen] =  list
+			tempDict[keyNameDo] =  dict
+			$scope.compiledDict = _.extend($scope.compiledDict, tempDict)
+			if ($scope.headsRecieved == $scope.headCount)
+				console.log('$doneCompiling', $scope.compiledDict)
+		
+		
+	})
 
 	$interval(pollForNewBlocks, POLL_DELAY_SECONDS)
 }])
