@@ -1,0 +1,9 @@
+{% verbatim %}
+<div>
+	When: <span class='sense_module_abbrev' ng-show='selectedModule'>a</span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button>
+	<select ng-show='selectedModule' ng-model='selectedAction' ng-options='attrib for attrib in selectedModule.attribs'>Select action</select>
+
+
+	<div do do-id='{{doIdCount}}' do-id-count='doIdCount' when-id-count='whenIdCount' parsed-when-id='parsedWhenId'></div>
+</div>
+{% endverbatim %}

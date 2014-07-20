@@ -5,6 +5,7 @@
 		<link href	="{% static 'css/css/flat-ui.css' %}" rel="stylesheet" type="text/css"/>
 		<link href	="{% static 'css/css/style.css' %}" rel="stylesheet" type="text/css"/>
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
 		<script src="{% static 'js/main.js' %}" type="text/javascript"></script>
 	</head>
 
@@ -18,15 +19,24 @@
 
 			<div class='row'>
 				<h5 class='font_amethyst'>Blocks you've plugged in</h5> 
-				{{modules}}
-				<div class='module' ng-repeat='module in modules'>
-					Check
+				<div ng-if='module.sense' class='sense_module' ng-repeat='module in modules' ng-click='selectedSenseModule(module)'>
+					{{module.name}}
+				</div>
+				<div ng-if='!module.sense' class='do_module' ng-repeat='module in modules' ng-click='selectedDoModule(module)'>
+					{{module.name}}
 				</div>
 			</div>
 
-			<div class='module'>
-					Check
+			<div class='row'>
+				<h5 class='font-amethyst'>Play with your blocks </h5>
+				<div when when-id='{{whenIdCount}}' when-id-count='whenIdCount' do-id-count='doIdCount' head='true'></div>
+
 			</div>
+
+			<div class='row'>
+				<button class='btn-inverse btn' ng-click='done()'>Done!</button>
+			</div>
+
 
 			{% endverbatim %}
 		</div>

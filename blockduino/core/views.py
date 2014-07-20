@@ -18,6 +18,7 @@ class Accel:
 		self.ground = data['ground_pin']
 		self.attribs = ['turn_up', 'turn_down', 'turn_left', 'turn_right']
 		self.name = 'accel'
+		self.sense = True
 
 class Servo:
 	def __init__(self, data):
@@ -26,6 +27,7 @@ class Servo:
 		self.ground = data['ground_pin']
 		self.attribs = ['rotate_left', 'rotate_right', 'center']
 		self.name = 'servo'
+		self.sense = False
 
 class LED:
 	def __init__(self, data):
@@ -33,6 +35,7 @@ class LED:
 		self.ground = data['ground_pin']
 		self.attribs = ['turn_on', 'turn_off']
 		self.name = 'led'
+		self.sense = False
 
 class PushButton:
 	def __init__(self, data):
@@ -40,6 +43,7 @@ class PushButton:
 		self.ground = data['ground_pin']
 		self.attribs = ['turn_on', 'turn_off']
 		self.name = 'push_button'
+		self.sense = True
 
 def new_module(request):
 	payload = json.loads(request.body)
