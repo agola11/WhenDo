@@ -44,7 +44,7 @@
 			</div>
 			<br/>	
 			<div class='row' ng-show='modules.length'>
-				<h5 class='font-amethyst'>Play with your modules</h5>
+				<h5 style='display:inline;' class='font-amethyst'>Play with your modules</h5><span>    </span><button ng-click='addWhenDo()'class='btn-primary btn'> + When/Do  </button>
 
 				<div class='row' ng-repeat='whenDo in whenDos'>
 					
@@ -54,8 +54,8 @@
 			</div>
 
 			<div class='row' ng-show='modules.length'>
-				<button ng-click='addWhenDo()'class='btn-primary btn'> + When/Do  </button>
-				<button class='btn-inverse btn' ng-click='done()'>Done!</button>
+				
+				<button ng-show='whenDos.length' class='btn-inverse btn' ng-click='done()'>Done!</button>
 			</div>
 			<display-table><display-table>
 

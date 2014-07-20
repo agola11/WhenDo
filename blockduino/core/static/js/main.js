@@ -95,7 +95,7 @@ blockduino.directive('do', function($compile, $filter) {
 			doId: '@'
 		},
 		link: function(scope, elem, attrs) {
-			var default_do_html = "Do: <span class='do_module_abbrev' ng-show='selectedModule'>{{selectedModule.name}}</span><span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button></span><span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> <button ng-show='selectedModule && selectedAction && selectedModule[selectedAction] && !actionAfterAction' ng-click='displayTable(\"actionAfter\")' class='btn-primary btn'> + </button> <button ng-show='actionAfterAction' ng-click='displayTable(\"actionAfter\")' class='btn-primary btn'> {{actionAfterAction}}</button><button ng-click='goDeeper()' class='btn-primary btn'>deeper</button></span><button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button><display-table ng-hide='selectedAction && getActionAfterOptions' show-table='showTable' selected='selectedAction' options='getOptions()'></display-table><display-table ng-show='selectedAction && getActionAfterOptions' show-table='showTable' selected='actionAfterAction' options='getOptions()'></display-table>"
+			var default_do_html = "Do: <span class='do_module_abbrev' ng-show='selectedModule'>{{selectedModule.name}}</span><span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button></span><span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> <button ng-show='selectedModule && selectedAction && selectedModule[selectedAction] && !actionAfterAction' ng-click='displayTable(\"actionAfter\")' class='btn-primary btn'> + </button> <button ng-show='actionAfterAction' ng-click='displayTable(\"actionAfter\")' class='btn-primary btn'> {{actionAfterAction}}</button><button ng-click='goDeeper()' class='btn-primary btn'>+When/Do</button></span><button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button><display-table ng-hide='selectedAction && getActionAfterOptions' show-table='showTable' selected='selectedAction' options='getOptions()'></display-table><display-table ng-show='selectedAction && getActionAfterOptions' show-table='showTable' selected='actionAfterAction' options='getOptions()'></display-table>"
 			scope_do = scope;
 			scope.showTable = false;
 			scope.selectedAction = '';
@@ -123,7 +123,7 @@ blockduino.directive('do', function($compile, $filter) {
 				$compile(elem.contents())(scope);
 			}
 			var addHtml = function() {
-				elem.append("<div when ng-show='showWhen' when-id='{{whenIdCount}}' when-id-count='whenIdCount' do-id-count='doIdCount' parsed-do-id='parsedDoId'></div>")
+				elem.append("<div style='margin-left:-10em' when ng-show='showWhen' when-id='{{whenIdCount}}' when-id-count='whenIdCount' do-id-count='doIdCount' parsed-do-id='parsedDoId'></div>")
         		$compile(elem.contents())(scope);
 			}
 
@@ -208,8 +208,8 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	scope_ctrl = $scope;
 	POLL_DELAY_SECONDS = 500;
 	$scope.modules = []
-	$scope.whenDoId = 1
-	$scope.whenDos = [1]
+	$scope.whenDoId = 0
+	$scope.whenDos = []
 	$scope.whenIdCount = 0
 	$scope.doIdCount = 0
 	$scope.headCount = 1;
@@ -230,6 +230,11 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 		'led_g': 'B_LEDGroup'
 	}
 	var led_attribs = ['turn_on', 'turn_off']
+
+	$http.get('/delete_pickle/').
+		success(function() {
+			scope.log('success')
+		})
 
 	var pollForNewBlocks = function() {
 		$http.get('/poll_new/').success(function(result) {
@@ -266,6 +271,9 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 
 						result[i].name = 'accel' + $scope.numAccel.toString()
 						$scope.initList.push([initListMap['accel'], result[i].name])
+
+						console.log('result', result[i])
+
 						$scope.setupList.push([result[i].name, "init", result[i].x_pin.toString(), result[i].y_pin.toString()])
 
 					}

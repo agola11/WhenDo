@@ -35,8 +35,8 @@ div .do_module {
 }
 
 div .sense_module_abbrev {
-	height: 1.5em;
-	width: 3em;
+	height: 2em;
+	width: 4em;
 	background-color: #8e44ad;
 	border-radius: 1em;
 	text-align: center;
@@ -45,8 +45,8 @@ div .sense_module_abbrev {
 }
 
 div .do_module_abbrev {
-	height: 1.5em;
-	width: 3em;
+	height: 2em;
+	width: 4em;
 	background-color: #c0392b;
 	border-radius: 1em;
 	text-align: center;

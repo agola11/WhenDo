@@ -5,7 +5,7 @@
 		<button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> 
 		<button ng-show='selectedModule && selectedAction && selectedModule[selectedAction] && !actionAfterAction' ng-click='displayTable("actionAfter")' class='btn-primary btn'> + </button> <button ng-show='actionAfterAction' ng-click='displayTable("actionAfter")' class='btn-primary btn'> {{actionAfterAction}}</button>
 
-	<button ng-click='goDeeper()' class='btn-primary btn'>deeper</button>
+	<button ng-click='goDeeper()' class='btn-primary btn'>+When/Do</button>
 	</span>
 	
 	<button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button>
