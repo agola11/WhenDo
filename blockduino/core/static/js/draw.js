@@ -34,18 +34,21 @@ function() {
         ctx.fillRect(c1[0], c1[1] - 62, c1[0] + 62, c1[1] - 124);
         return;
     };
+
     function drawLED(corner, ctx) {
         ctx.fillStyle == 'blue';
         c1 = getXY(corner)
 
         ctx.fillRect(c1[0], c1[1], c1[0] + 62, c1[1] - 62);
     };
+
     function drawServo(corner, ctx) {
         ctx.fillStyle == 'orange';
         c1 = getXY(corner)
 
         ctx.fillRect(c1[0], c1[1], c1[0] + 62, c1[1] - 62);
     };
+
     function drawPush(corner, ctx) {
         ctx.fillStyle == 'black';
         c1 = getXY(corner)
