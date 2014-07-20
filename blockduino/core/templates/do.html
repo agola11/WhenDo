@@ -1,0 +1,11 @@
+{% verbatim %}
+	Do: <span class='do_module_abbrev' ng-show='selectedModule'>{{selectedModule.name | limitTo:1}}</span><span><button ng-show='!selectedModule' ng-click='selectModule()'class='btn-primary btn'>  +  </button></span>
+	
+	<span> <button ng-show='selectedModule && !selectedAction' ng-click='displayTable()' class='btn-primary btn'> + </button> <button ng-show='selectedModule && selectedAction' ng-click='displayTable()' class='btn-primary btn'> {{selectedAction}}</button> 
+	<button ng-click='goDeeper()' class='btn-primary btn'>deeper</button>
+	</span>
+	
+	<button ng-show='selectedModule' class='btn-danger btn' ng-click='clear()'>-</button>
+
+	<display-table show-table='showTable' selected='selectedAction' options='selectedModule.attribs'></display-table>
+{% endverbatim %}

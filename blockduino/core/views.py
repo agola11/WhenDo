@@ -18,24 +18,28 @@ class Accel:
 		self.power = data['y_pin']
 		self.attribs = ['is_up', 'is_down', 'is_left', 'is_right']
 		self.name = 'accel'
+		self.sense = True
 
 class Servo:
 	def __init__(self, data):
 		self.data_pin = data['data_pin']
 		self.attribs = ['turn_left', 'turn_right', 'center']
 		self.name = 'servo'
+		self.sense = False
 
 class LED:
 	def __init__(self, data):
 		self.power = data['power_pin']
 		self.attribs = ['turn_on', 'turn_off']
 		self.name = 'led'
+		self.sense = False
 
 class PushButton:
 	def __init__(self, data):
 		self.power = data['power_pin']
 		self.attribs = ['is_on']
 		self.name = 'push_button'
+		self.sense = True
 
 def new_module(request):
 	payload = json.loads(request.body)

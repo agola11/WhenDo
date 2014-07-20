@@ -2,23 +2,66 @@
 <html lang="en">
 
 	<head>
+		<link href	="{% static 'foundation-essentials-5.3.1/css/foundation.css' %}" rel="stylesheet" type="text/css"/>
 		<link href	="{% static 'css/css/flat-ui.css' %}" rel="stylesheet" type="text/css"/>
 		<link href	="{% static 'css/css/style.css' %}" rel="stylesheet" type="text/css"/>
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
 		<script src="{% static 'js/main.js' %}" type="text/javascript"></script>
 	</head>
 
 
 	<body ng-app='blockduino'>
-
-		<h3>Your Blockduino Project!</h3>
+		<div class='row'>
+		<h2>Your Blockduino Project!</h2>
+		</div>
 
 		<div ng-controller='HomeController'>
+			{% verbatim %}
+
 			<div class='row'>
-				<h5 class='font_amethyst'>Blocks you've plugged in</h5> 
+
+				<h5 class='font_amethyst' ng-show='modules.length'>Modules you've plugged in</h5> 
+				<div ng-if='(module.sense && !displayDoingModules)' class='sense_module' ng-repeat='module in modules' ng-click='selectedSenseModule(module)'>
+					<span style='margin-top:1.5em; display:inline-block'>{{module.name}}</span>
+				</div>
+				<div ng-if='(module.sense && displayDoingModules)' class='sense_module_grayed_out' ng-repeat='module in modules' ng-click='selectedSenseModule(module)'>
+					<span style='margin-top:1.5em; display:inline-block'>{{module.name}}</span>
+				</div>
+
+				
+				<div ng-if='(!module.sense && !displaySensingModules)' class='do_module' ng-repeat='module in modules' ng-click='selectedDoModule(module)'>
+					<span style='margin-top:1.5em; display:inline-block'>{{module.name}}</span>
+				</div>
+				<div ng-if='(!module.sense && displaySensingModules)' class='do_module_grayed_out' ng-repeat='module in modules' ng-click='selectedDoModule(module)'>
+					<span style='margin-top:1.5em; display:inline-block'>{{module.name}}</span>
+				</div>
+			</div>
+			<div class='row'>
+				<h5 ng-hide='modules.length'>
+					To start, plug in a module.
+				</h5>
+			</div>
+			<br/>	
+			<div class='row' ng-show='modules.length'>
+				<h5 class='font-amethyst'>Play with your modules</h5>
+
+				<div class='row' ng-repeat='whenDo in whenDos'>
+					
+					<div when when-id='{{whenIdCount}}' when-id-count='whenIdCount' do-id-count='doIdCount' head='true'></div>
+				</div>
 
 			</div>
+
+			<div class='row' ng-show='modules.length'>
+				<button ng-click='addWhenDo()'class='btn-primary btn'> + When/Do  </button>
+				<button class='btn-inverse btn' ng-click='done()'>Done!</button>
+			</div>
+			<display-table><display-table>
+
+
+			{% endverbatim %}
 		</div>
 	</body>
 
-</html>
+</html>	
