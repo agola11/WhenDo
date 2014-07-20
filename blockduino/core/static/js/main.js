@@ -232,7 +232,7 @@ blockduino.controller('HomeController', ['$scope', '$http', '$interval', functio
 	var led_attribs = ['turn_on', 'turn_off']
 
 	var pollForNewBlocks = function() {
-		$http.get('/api/poll/').success(function(result) {
+		$http.get('/poll_new/').success(function(result) {
 			if (result.length) {
 				for (i=0; i<result.length; i++) {
 					if (result[i].name == 'led') {

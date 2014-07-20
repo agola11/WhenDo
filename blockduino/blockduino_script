@@ -3,5 +3,5 @@
 cd ~/blockduino/
 
 ino clean
-ino build -m mega2560 --cxxflags=-I$PWD/src
-ino upload -m mega2560
+ino build --cxxflags=-I$PWD/src
+ino upload -p /dev/tty.usbmodem14111 

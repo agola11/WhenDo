@@ -11,36 +11,37 @@ import time
 import serial
 from core.compiler.compiler import Compiler
 import os.path
+from os import remove
 import subprocess
 
 
 modules = set(['accel', 'servo', 'led', 'push_button'])
 
 class Accel:
-	def __init__(self, data):
-		self.data_pin = data['x_pin']
-		self.power = data['y_pin']
+	def __init__(self, x, y):
+		self.x_pin = int(x)
+		self.y_pin = int(y)
 		self.attribs = ['is_up', 'is_down', 'is_left', 'is_right']
 		self.name = 'accel'
 		self.sense = True
 
 class Servo:
 	def __init__(self, data):
-		self.data_pin = data['data_pin']
+		self.data_pin = int(data)
 		self.attribs = ['turn_left', 'turn_right', 'center']
 		self.name = 'servo'
 		self.sense = False
 
 class LED:
 	def __init__(self, data):
-		self.power = data['power_pin']
+		self.power = int(data)
 		self.attribs = ['turn_on', 'turn_off']
 		self.name = 'led'
 		self.sense = False
 
 class PushButton:
 	def __init__(self, data):
-		self.power = data['power_pin']
+		self.power = int(data)
 		self.attribs = ['is_on']
 		self.name = 'push_button'
 		self.sense = True
@@ -105,8 +106,51 @@ def new_module(request):
 
 def poll_from_serial(request):
 	# TODO get serial
+	maps = {'0':'led', '3':'switch', '2':'servo', '1':'accel'}
+	resps = []
+	ser = serial.Serial('/dev/tty.usbmodem14141', 9600)
+	while ser.inWaiting() == 0:
+		pass
 	while ser.inWaiting() != 0:
 		resp = ser.readline()
+		resps.append(resp)
+	resp = resps[-1]
+	print resp
+	resp = resp.split(';')
+	print resp
+
+	try:
+		slots = pickle.load(open('slots.pick'))
+	except IOError:
+		slots = {}
+
+	p_resp = []
+	resp = resp[:-1]
+	for i in resp:
+		d = i.split(',')
+		if d[0] in slots:
+			if slots[d[0]] == d[1]:
+				continue
+		else:
+			slots[d[0]] = d[1]
+			mod_name = maps[d[1]]
+			print mod_name
+			if mod_name == 'accel':
+				obj = Accel(d[2], d[3])
+			elif mod_name == 'servo':
+				obj = Servo(d[2])
+			elif mod_name == 'led':
+				obj = LED(d[2])
+			else:
+				obj = PushButton(d[2])
+			p_resp.append(obj)
+
+	f = open('slots.pick', 'w')
+	pickle.dump(slots, f)
+	f.close()
+	print p_resp
+
+	return HttpResponse(jsonpickle.encode(p_resp, unpicklable=False), content_type="application/json")
 
 
 # API views
