@@ -312,7 +312,15 @@ class Compiler:
 
     def build_init(self):
         for block_line in self.initArray:
-            line = block_line[0] + ' ' + block_line[1] + ';'
+            line = block_line[0] + ' ' + block_line[1]
+            if len(block_line) > 2:
+                sub_array = block_line[2:]
+                line += '('
+                for sub in sub_array:
+                    line += sub + ',' 
+                line = line[:-1]
+                line += ')'
+            line += ';'
             self.codeInitArray.append(line)
 
     def build_setup(self):
