@@ -18,7 +18,7 @@ from time import sleep
 
 class Compiler:
 
-    def __init__(self, json_dict):
+    def __init__(self, json_dict, setup_array, init_array):
         """
             json_dict:
                 Must be a python dictionary object. The dictionary comes from
@@ -26,11 +26,17 @@ class Compiler:
         """
         self.jsonDict = json_dict
         self.codeArray = []
+        self.codeInitArray = []
+        self.codeSetupArray = []
+        self.setupArray = setup_array
+        self.initArray = init_array
 
     def get_start(self):
         self.wPos = 1
         self.dPos = 1
         self.keyString = 'W1'
+        self.codeArray.append('void loop()')
+        self.codeArray.append('{')
 
     #TODO 
     def compiler_step(self):
@@ -218,6 +224,7 @@ class Compiler:
                     pass
                 else:
                     line_build += '.' + block_item + '()'
+            line_build += ';'
             self.codeArray.append(line_build)
 
 
@@ -235,6 +242,9 @@ class Compiler:
 
     def build(self, filename='block.pde'):
         self.get_start()
+
+        self.build_init()
+        self.build_setup()
 
         while True:
             cVal = self.get_val()
@@ -256,6 +266,24 @@ class Compiler:
             self.codeArray.append('}')
         
 
+        f = open(filename, 'w+')
+        
+        f.write('#include <blockduino.h>\n')
+
+        for line in self.codeInitArray:
+            f.write(line)
+            f.write('\n')
+        
+        f.write('void setup()')
+        f.write('\n')
+        f.write('{')
+        f.write('\n')
+        for line in self.codeSetupArray:
+            f.write('    ')
+            f.write(line)
+            f.write('\n')
+        f.write('}')
+        f.write('\n')
         index_pos = 0 
         for line in self.codeArray:
             sub_array = self.codeArray[:index_pos]
@@ -263,8 +291,30 @@ class Compiler:
             if line == '}':
                 indent_level = indent_level - 1 
             out_line = ('    ' * indent_level) + line 
+            f.write(out_line + '\n')
             index_pos = index_pos + 1
-            print out_line
+
+
+    def build_init(self):
+        for block_line in self.initArray:
+            line = block_line[0] + ' ' + block_line[1] + ';'
+            self.codeInitArray.append(line)
+
+    def build_setup(self):
+        for block_line in self.setupArray:
+            line = block_line[0] + '.' + block_line[1] + '('
+            for block in block_line:
+                if block == block_line[0] or block == block_line[1]:
+                    pass
+                else:
+                    line += block + ','
+            if line[-1] == ',':
+                line = line[:-1]
+            line += ');'
+            self.codeSetupArray.append(line)
+
+
+
             
 
 
