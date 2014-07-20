@@ -8,6 +8,11 @@ from django.views.generic import TemplateView, View
 import uuid
 import jsonpickle
 import time
+import serial
+from core.compiler import compiler
+import os.path
+import subprocess
+
 
 modules = set(['accel', 'servo', 'led', 'push_button'])
 
@@ -36,9 +41,24 @@ class LED:
 class PushButton:
 	def __init__(self, data):
 		self.power = data['power_pin']
-		self.attribs = ['is_on', 'is_off']
+		self.attribs = ['is_on']
 		self.name = 'push_button'
 		self.sense = True
+
+def compile(request):
+	payload = json.loads(request.body)
+	j_dict = payload['j_dict']
+	l1 = payload['l_dict']
+	s1 = payload['s_dict']
+	c1 = compiler.Compiler(j_dict, l1, s1)
+	save_path = '~/blockduino/src/'
+	name = 'blockduino_sketch.ino'
+	complete_name = os.path.join(save_path, name)
+	c1.build(complete_name)
+	subprocess.call(['blockduino_script'])
+	resp = HttpResponse()
+	resp.status_code = 200
+	return resp
 
 def new_module(request):
 	payload = json.loads(request.body)
@@ -78,6 +98,11 @@ def new_module(request):
 		resp = HttpResponse()
 		resp.status_code = 200
 		return resp
+
+def poll_from_serial(request):
+	# TODO get serial
+	while ser.inWaiting() != 0:
+		resp = ser.readline()
 
 
 # API views
