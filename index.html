@@ -57,7 +57,7 @@ It is easiest to explain the system in more technical detail by breaking down th
 <h3>Detecting Modules and Configurations</h3>
 
 <p>
-As you can see in the picture above, the board has two columns of rows consisting of a ground port, GPIO, and power (5V) port.  he GPIO ports on the board are connected to the <b>same number</b> serial ports on both Arduinos, and the power and ground ports on the board are connected to power and ground on <b>each</b> Arduino. </p>
+As you can see in the picture above, the board has two columns of rows consisting of a ground port, GPIO, and power (5V) port.  The GPIO ports on the board are connected to the <b>same number</b> serial ports on both Arduinos, and the power and ground ports on the board are connected to power and ground on <b>each</b> Arduino. </p>
 
 <p>
 We encased sensors and actuators in small cardboard boxes, exposing their power, ground, and I/O ports. We built three modules: a servo, push-button switch, and accelerometer. Each module also contains a resistor that is connected from I/O to ground on each sensor. The value of the resistor is different for each type of module.  The event of plugging in a module triggers an interrupt on the polling Arduino.  The polling Arduino knows the interrupt port, and figures out what module was plugged in by using the <code>analogRead</code> function and doing voltage divider arithmetic.  The Arduino sends the type of module and port in string format to a buffer read by the Django Webserver on the laptop over USB (this is done using the <code>pyserial</code> module). </p>
